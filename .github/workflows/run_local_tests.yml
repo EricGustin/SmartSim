@@ -12,23 +12,19 @@ env:
 
 jobs:
   build_wheels:
-    name: Build wheels on ${{ matrix.os }}
+    name: Build wheels on ${{ matrix.os }} with Python ${{ matrix.py_v }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
         os: [ubuntu-20.04, macos-10.15]
-        python-version: [3.7, 3.8, 3.9]
+        py_v: [3.7, 3.8, 3.9] # python versions
 
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
         with:
-          python-version: ${{ matrix.python-version }}
-
-      - name: Display Python version
-        run: |
-          python -c "import sys; print(sys.version)"
+          python-version: ${{ matrix.py_v }}
 
       - name: Install build-essentials
         if: contains(matrix.os, 'ubuntu')
@@ -44,13 +40,13 @@ jobs:
 
 
       - name: Install SmartSim (with ML backends if not python 3.9)
-        if: matrix.python-version != '3.9'
+        if: matrix.py_v != '3.9'
         run: |
           echo "$(brew --prefix)/opt/make/libexec/gnubin" >> $GITHUB_PATH
           python -m pip install -vvv .[dev,ml,ray]
 
       - name: Install SmartSim
-        if: matrix.python-version == '3.9'
+        if: matrix.py_v == '3.9'
         run: |
           echo "$(brew --prefix)/opt/make/libexec/gnubin" >> $GITHUB_PATH
           python -m pip install -vvv .[dev,ray]
@@ -66,7 +62,7 @@ jobs:
       - name: Run Pytest coverage tests
         run: |
           echo "SMARTSIM_LOG_LEVEL=debug" >> $GITHUB_ENV
-          python -m pytest --cov=./smartsim -vv --cov-config=$PWD/tests/test_configs/cov/local_cov.cfg --ignore=full_wlm/ --cov-report=xml tests/
+          python -m pytest --import-mode=importlib --cov=./smartsim -vv --cov-config=$PWD/tests/test_configs/cov/local_cov.cfg --ignore=full_wlm/ --cov-report=xml tests/
 
       - name: Upload Pytest coverage to Codecov
         uses: codecov/codecov-action@v2
