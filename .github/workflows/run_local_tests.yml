@@ -11,8 +11,8 @@ env:
 
 
 jobs:
-  build_wheels:
-    name: Build wheels on ${{ matrix.os }} with Python ${{ matrix.py_v }}
+  build_wheels_and_test:
+    name: Build wheels and test on ${{ matrix.os }} with Python ${{ matrix.py_v }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -37,7 +37,6 @@ jobs:
       - name: Install GNU make for MacOS
         if: contains(matrix.os, 'macos')
         run: brew install make || true
-
 
       - name: Install SmartSim (with ML backends if not python 3.9)
         if: matrix.py_v != '3.9'
