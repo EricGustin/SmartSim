@@ -62,7 +62,7 @@ jobs:
         run: |
           echo "SMARTSIM_LOG_LEVEL=debug" >> $GITHUB_ENV
           cd ./tests/
-          python -m pytest --cov=../smartsim/ -vv --cov-config=$PWD/test_configs/cov/local_cov.cfg --ignore=full_wlm/ --cov-report=xml
+          python -m pytest --cov=../smartsim/ -vv --cov-config=$PWD/test_configs/cov/local_cov.cfg --ignore=full_wlm/ --cov-report=xml --import-mode=importlib
 
       - name: Upload Pytest coverage to Codecov
         uses: codecov/codecov-action@v2
