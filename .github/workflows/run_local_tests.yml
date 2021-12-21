@@ -11,24 +11,20 @@ env:
 
 
 jobs:
-  build_wheels:
-    name: Build wheels on ${{ matrix.os }}
+  build_wheels_and_test:
+    name: Build wheels and test on ${{ matrix.os }} with Python ${{ matrix.py_v }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
         os: [ubuntu-20.04, macos-10.15]
-        python-version: [3.7, 3.8, 3.9]
+        py_v: [3.7, 3.8, 3.9] # python versions
 
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
         with:
-          python-version: ${{ matrix.python-version }}
-
-      - name: Display Python version
-        run: |
-          python -c "import sys; print(sys.version)"
+          python-version: ${{ matrix.py_v }}
 
       - name: Install build-essentials
         if: contains(matrix.os, 'ubuntu')
@@ -42,15 +38,14 @@ jobs:
         if: contains(matrix.os, 'macos')
         run: brew install make || true
 
-
       - name: Install SmartSim (with ML backends if not python 3.9)
-        if: matrix.python-version != '3.9'
+        if: matrix.py_v != '3.9'
         run: |
           echo "$(brew --prefix)/opt/make/libexec/gnubin" >> $GITHUB_PATH
           python -m pip install -vvv .[dev,ml,ray]
 
       - name: Install SmartSim
-        if: matrix.python-version == '3.9'
+        if: matrix.py_v == '3.9'
         run: |
           echo "$(brew --prefix)/opt/make/libexec/gnubin" >> $GITHUB_PATH
           python -m pip install -vvv .[dev,ray]
@@ -63,7 +58,13 @@ jobs:
         if: contains(matrix.os, 'ubuntu')
         run: smart -v --device cpu --onnx
 
-      - name: Run Pytest
+      - name: Run Pytest coverage tests
         run: |
           echo "SMARTSIM_LOG_LEVEL=debug" >> $GITHUB_ENV
-          py.test -s --import-mode=importlib -o log_cli=true
+          cd ./tests/
+          python -m pytest --cov=../smartsim -vv --cov-config=$PWD/test_configs/cov/local_cov.cfg --ignore=full_wlm/ --cov-report=xml --import-mode=importlib -o log_cli=true
+
+      - name: Upload Pytest coverage to Codecov
+        uses: codecov/codecov-action@v2
+        with:
+          files: ./tests/coverage.xml
