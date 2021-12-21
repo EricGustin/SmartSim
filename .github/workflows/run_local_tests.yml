@@ -62,7 +62,7 @@ jobs:
       - name: Run Pytest coverage tests
         run: |
           echo "SMARTSIM_LOG_LEVEL=debug" >> $GITHUB_ENV
-          python -m pytest --import-mode=importlib -o --cov=./smartsim -vv --cov-config=$PWD/tests/test_configs/cov/local_cov.cfg --ignore=full_wlm/ --cov-report=xml tests/
+          python -m pytest --import-mode=importlib --cov=./smartsim -vv --cov-config=$PWD/tests/test_configs/cov/local_cov.cfg --ignore=full_wlm/ --cov-report=xml tests/ -o
 
       - name: Upload Pytest coverage to Codecov
         uses: codecov/codecov-action@v2
