@@ -1,4 +1,4 @@
-name: run-tests-local
+name: run-coverage-tests
 
 on: [push, pull_request]
 
@@ -12,7 +12,7 @@ env:
 
 jobs:
   build_wheels_and_test:
-    name: Build wheels and test on ${{ matrix.os }} with Python ${{ matrix.py_v }}
+    name: Test on ${{ matrix.os }} with Python ${{ matrix.py_v }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
