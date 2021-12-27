@@ -62,7 +62,7 @@ jobs:
         run: |
           echo "SMARTSIM_LOG_LEVEL=debug" >> $GITHUB_ENV
           echo "COVERAGE_RCFILE=$PWD/tests/test_configs/cov/local_cov.cfg" >> $GITHUB_ENV
-          coverage run -m -a pytest --cov=./smartsim/
+          coverage run -m -a pytest --cov=./smartsim/ --import-mode=importlib
           coverage xml
 
       - name: Upload Pytest coverage to Codecov
