@@ -50,14 +50,6 @@ jobs:
           echo "$(brew --prefix)/opt/make/libexec/gnubin" >> $GITHUB_PATH
           python -m pip install -vvv .[dev,ray]
 
-      - name: Install ML Runtimes with Smart (with pt and tf)
-        if: contains(matrix.os, 'macos')
-        run: smart -v --device cpu
-
-      - name: Install ML Runtimes with Smart (with pt tf and onnx support)
-        if: contains(matrix.os, 'ubuntu')
-        run: smart -v --device cpu --onnx
-
       - name: Run Pytest coverage tests
         run: |
           echo "SMARTSIM_LOG_LEVEL=debug" >> $GITHUB_ENV
