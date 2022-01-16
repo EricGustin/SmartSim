@@ -29,7 +29,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
         with:
-          py_v: ${{ matrix.py_v }}
+          python-version: ${{ matrix.py_v }}
 
       - name: Install build-essentials
         if: contains(matrix.os, 'ubuntu')
