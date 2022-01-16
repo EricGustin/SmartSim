@@ -1,0 +1,95 @@
+name: run-tests
+
+on: [push, pull_request]
+
+env:
+  HOMEBREW_NO_ANALYTICS: "ON" # Make Homebrew installation a little quicker
+  HOMEBREW_NO_AUTO_UPDATE: "ON"
+  HOMEBREW_NO_BOTTLE_SOURCE_FALLBACK: "ON"
+  HOMEBREW_NO_GITHUB_API: "ON"
+  HOMEBREW_NO_INSTALL_CLEANUP: "ON"
+
+
+jobs:
+  run_tests:
+    name: Run tests with build combo ${{ matrix.os }}, Python ${{ matrix.py_v}}, Compiler ${{ matrix.compiler }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-20.04, macos-10.15]
+        compiler: [intel, 8, 9, 10, 11] # intel compiler, and versions of GNU compiler
+        py_v: [3.7, 3.8, 3.9]
+
+    env:
+      FC: gfortran-${{ matrix.compiler }}
+      GCC_V: ${{ matrix.compiler }} # used when the compiler is GNU
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          py_v: ${{ matrix.py_v }}
+
+      - name: Install build-essentials
+        if: contains(matrix.os, 'ubuntu')
+        run: |
+          sudo add-apt-repository ppa:ubuntu-toolchain-r/test
+          sudo apt-get update
+          sudo apt-get install -y build-essential
+          sudo apt-get install -y wget
+
+      - name: Install GFortran Linux
+        if: "!contains( matrix.compiler, 'intel' )" # if using GNU compiler
+        run: |
+          sudo apt-get update &&
+          sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test &&
+          sudo apt-get update &&
+          sudo apt-get install -y gcc-${GCC_V} gfortran-${GCC_V} &&
+          sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-${GCC_V} 100 \
+          --slave /usr/bin/gfortran gfortran /usr/bin/gfortran-${GCC_V}
+
+      - name: Install Intel compiler
+        if: "contains( matrix.compiler, 'intel' )" # if using intel compiler
+        run: |
+          wget https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS-2023.PUB &&
+          sudo apt-key add GPG-PUB-KEY-INTEL-SW-PRODUCTS-2023.PUB &&
+          rm GPG-PUB-KEY-INTEL-SW-PRODUCTS-2023.PUB &&
+          echo "deb https://apt.repos.intel.com/oneapi all main" | sudo tee /etc/apt/sources.list.d/oneAPI.list &&
+          sudo apt-get update &&
+          sudo apt-get install intel-oneapi-compiler-fortran intel-oneapi-compiler-dpcpp-cpp-and-cpp-classic
+          source /opt/intel/oneapi/setvars.sh &&
+          printenv >> $GITHUB_ENV &&
+          echo "CC=icc" >> $GITHUB_ENV &&
+          echo "CXX=icpc" >> $GITHUB_ENV &&
+          echo "FC=ifort" >> $GITHUB_ENV
+
+      - name: Install GNU make for MacOS
+        if: contains(matrix.os, 'macos')
+        run: brew install make || true
+
+
+      - name: Install SmartSim (with ML backends if not python 3.9)
+        if: matrix.py_v != '3.9'
+        run: |
+          echo "$(brew --prefix)/opt/make/libexec/gnubin" >> $GITHUB_PATH
+          python -m pip install -vvv .[dev,ml,ray]
+
+      - name: Install SmartSim
+        if: matrix.py_v == '3.9'
+        run: |
+          echo "$(brew --prefix)/opt/make/libexec/gnubin" >> $GITHUB_PATH
+          python -m pip install -vvv .[dev,ray]
+
+      - name: Install ML Runtimes with Smart (with pt and tf)
+        if: contains(matrix.os, 'macos')
+        run: smart build --device cpu -v
+
+      - name: Install ML Runtimes with Smart (with pt tf and onnx support)
+        if: contains(matrix.os, 'ubuntu')
+        run: smart build --device cpu --onnx -v
+
+      - name: Run Pytest
+        run: |
+          echo "SMARTSIM_LOG_LEVEL=debug" >> $GITHUB_ENV
+          py.test -s --import-mode=importlib -o log_cli=true
