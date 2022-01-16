@@ -12,14 +12,14 @@ env:
 
 jobs:
   run_tests:
-    name: Run tests with build combo ${{ matrix.os }}, Python ${{ matrix.py_v}}, Compiler ${{ matrix.compiler }}
+    name: Run tests with build combo ${{ matrix.os }}, Python ${{ matrix.python-version}}, Compiler ${{ matrix.compiler }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
         os: [ubuntu-20.04, macos-10.15]
         compiler: [intel, 8, 9, 10, 11] # intel compiler, and versions of GNU compiler
-        py_v: [3.7, 3.8, 3.9]
+        python-version: [3.7, 3.8, 3.9]
 
     env:
       FC: gfortran-${{ matrix.compiler }}
@@ -29,7 +29,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
         with:
-          py_v: ${{ matrix.py_v }}
+          python-version: ${{ matrix.python-version }}
 
       - name: Install build-essentials
         if: contains(matrix.os, 'ubuntu')
@@ -70,12 +70,12 @@ jobs:
 
 
       - name: Install SmartSim (with ML backends if not python 3.9)
-        if: matrix.py_v != '3.9'
+        if: matrix.python-version != '3.9'
         run: |
           pip install -e .[ml,ray,dev]
 
       - name: Install SmartSim
-        if: matrix.py_v == '3.9'
+        if: matrix.python-version == '3.9'
         run: |
           pip install -e .[ml,ray,dev]
 
