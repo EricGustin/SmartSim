@@ -66,10 +66,10 @@ jobs:
       - name: Install Intel compiler on MacOS
         if: "contains( matrix.compiler, 'intel' ) && contains( matrix.os, 'macos')"
         run: |
-          pip install intel-openmp==2022.0.1 &&
-          pip install tbb4py==2021.5.1 &&
-          pip install opencl-rt==2022.0.1 &&
-          pip install dpcpp-cpp-rt==2022.0.1 &&
+          pip install intel-openmp &&
+          pip install tbb4py &&
+          pip install opencl-rt &&
+          pip install dpcpp-cpp-rt &&
           printenv >> $GITHUB_ENV &&
           echo "CC=icc" >> $GITHUB_ENV &&
           echo "CXX=icpc" >> $GITHUB_ENV &&
