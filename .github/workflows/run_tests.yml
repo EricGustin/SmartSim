@@ -12,21 +12,25 @@ env:
 
 jobs:
   run_tests:
-    name: Run tests with build combo ${{ matrix.os }}, Python ${{ matrix.py_v}}, Compiler ${{ matrix.compiler }}
+    name: Run tests with build combo ${{ matrix.os }}, Python ${{ matrix.py_v}}, Compiler ${{ matrix.compiler }}, rai ${{ matrix.rai }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
         os: [ubuntu-20.04, macos-10.15]
         compiler: [intel, 8] # intel compiler, and versions of GNU compiler
+        rai: [1.2.3, 1.2.5]
         py_v: [3.7, 3.8, 3.9]
         exclude:
           - os: macos-10.15
             compiler: intel
+          - os: macos-10.15
+            rai: 1.2.5
 
     env:
       GCC_V: ${{ matrix.compiler }} # used when the compiler is GNU
       NO_CHECKS: 0 # set to 1 when using intel compiler. Removes checks for gcc.
+      SMARTSIM_REDISAI: ${{ matrix.rai }}
 
     steps:
       - uses: actions/checkout@v2
