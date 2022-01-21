@@ -12,7 +12,7 @@ env:
 
 jobs:
   run_tests:
-    name: Run tests with build combo ${{ matrix.os }}, Python ${{ matrix.py_v}}, Compiler ${{ matrix.compiler }}, rai ${{ matrix.rai }}
+    name: Run tests with ${{ matrix.os }}, Python ${{ matrix.py_v}}, Compiler ${{ matrix.compiler }}, rai ${{ matrix.rai }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -28,7 +28,6 @@ jobs:
             rai: 1.2.5
 
     env:
-      FC: gfortran-${{ matrix.compiler }}
       GCC_V: ${{ matrix.compiler }} # used when the compiler is GNU
       NO_CHECKS: 0 # set to 1 when using intel compiler. Removes checks for gcc.
       SMARTSIM_REDISAI: ${{ matrix.rai }}
@@ -51,15 +50,6 @@ jobs:
         if: "contains( matrix.compiler, '8') && contains( matrix.os, 'macos' )"
         run: brew install make || true
 
-      - name: Install GFortran Linux
-        if: "!contains( matrix.compiler, 'intel' )" # if using GNU compiler
-        run: |
-          sudo apt-get update &&
-          sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test &&
-          sudo apt-get update &&
-          sudo apt-get install -y gcc-${GCC_V} gfortran-${GCC_V} &&
-          sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-${GCC_V} 100 \
-          --slave /usr/bin/gfortran gfortran /usr/bin/gfortran-${GCC_V}
 
       - name: Install Intel compiler on Linux
         if: "contains( matrix.compiler, 'intel' ) && contains( matrix.os, 'ubuntu')"
@@ -75,20 +65,19 @@ jobs:
           echo "CC=icc" >> $GITHUB_ENV &&
           echo "CXX=icpc" >> $GITHUB_ENV &&
           echo "NO_CHECKS=1" >> $GITHUB_ENV &&
-          echo "FC=ifort" >> $GITHUB_ENV
 
 
       - name: Install SmartSim (with ML backends if not python 3.9)
         if: matrix.py_v != '3.9'
         run: |
           echo "$(brew --prefix)/opt/make/libexec/gnubin" >> $GITHUB_PATH
-          python -m pip install -vvv .[dev,ml,ray]
+          python -m pip install .[dev,ml,ray]
 
       - name: Install SmartSim
         if: matrix.py_v == '3.9'
         run: |
           echo "$(brew --prefix)/opt/make/libexec/gnubin" >> $GITHUB_PATH
-          python -m pip install -vvv .[dev,ray]
+          python -m pip install .[dev,ray]
 
       - name: Install ML Runtimes with Smart
         run: smart build --device cpu -v
