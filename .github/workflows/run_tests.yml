@@ -18,8 +18,11 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-20.04, macos-10.15]
-        compiler: [intel, 8, 9, 10, 11] # intel compiler, and versions of GNU compiler
+        compiler: [intel, 8] # intel compiler, and versions of GNU compiler
         py_v: [3.7, 3.8, 3.9]
+        exclude:
+          - os: macos-10.15
+            compiler: intel
 
     env:
       FC: gfortran-${{ matrix.compiler }}
@@ -81,13 +84,8 @@ jobs:
           echo "$(brew --prefix)/opt/make/libexec/gnubin" >> $GITHUB_PATH
           python -m pip install -vvv .[dev,ray]
 
-      - name: Install ML Runtimes with Smart (with pt and tf)
-        if: contains(matrix.os, 'macos')
+      - name: Install ML Runtimes with Smart
         run: smart build --device cpu -v
-
-      - name: Install ML Runtimes with Smart (with pt tf and onnx support)
-        if: contains(matrix.os, 'ubuntu')
-        run: smart build --device cpu --onnx -v
 
       - name: Run Pytest
         run: |
