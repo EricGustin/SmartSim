@@ -45,7 +45,7 @@ jobs:
           sudo apt-get install -y wget
 
       - name: Install GNU make for MacOS
-        if: contains(matrix.os, 'macos')
+        if: "contains( matrix.compiler, 8) && contains(matrix.os, 'macos')"
         run: brew install make || true
 
       - name: Install Intel compiler on Linux
@@ -66,10 +66,10 @@ jobs:
       - name: Install Intel compiler on MacOS
         if: "contains( matrix.compiler, 'intel' ) && contains( matrix.os, 'macos')"
         run: |
-          pip install -c intel intel-openmp==2022.0.1 &&
-          pip install -c intel tbb4py==2021.5.1 &&
-          pip install -c intel opencl-rt==2022.0.1 &&
-          pip install -c intel dpcpp-cpp-rt==2022.0.1 &&
+          pip install intel-openmp==2022.0.1 &&
+          pip install tbb4py==2021.5.1 &&
+          pip install opencl-rt==2022.0.1 &&
+          pip install dpcpp-cpp-rt==2022.0.1 &&
           printenv >> $GITHUB_ENV &&
           echo "CC=icc" >> $GITHUB_ENV &&
           echo "CXX=icpc" >> $GITHUB_ENV &&
