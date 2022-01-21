@@ -63,8 +63,7 @@ jobs:
           source /opt/intel/oneapi/setvars.sh &&
           printenv >> $GITHUB_ENV &&
           echo "CC=icc" >> $GITHUB_ENV &&
-          echo "CXX=icpc" >> $GITHUB_ENV &&
-          echo "NO_CHECKS=1" >> $GITHUB_ENV
+          echo "CXX=icpc" >> $GITHUB_ENV
 
 
       - name: Install SmartSim (with ML backends if not python 3.9)
