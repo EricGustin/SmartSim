@@ -173,8 +173,6 @@ class RedisBuilder(Builder):
 
         # build Redis
         cmd = [self.make, "-j", str(self.jobs), f"MALLOC={self.malloc}"]
-        print(f"COMMAND PRINT: {cmd}")
-        print(f"REDIS BUILD PATH: {redis_build_path}")
         self.run_command(" ".join(cmd), shell=True, cwd=str(redis_build_path))
 
         # move redis binaries to smartsim/smartsim/_core/bin
