@@ -17,14 +17,14 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-20.04, macos-10.15]
+        os: [ubuntu-20.04, macos-10.15] # Operating systems
         compiler: [intel, 8] # intel compiler, and versions of GNU compiler
-        rai: [1.2.3, 1.2.5]
-        py_v: [3.7, 3.8, 3.9]
+        rai: [1.2.3, 1.2.5] # Redis AI versions
+        py_v: [3.7, 3.8, 3.9] # Python versions
         exclude:
-          - os: macos-10.15
+          - os: macos-10.15 # When on MacOS, do not use Intel compiler
             compiler: intel
-          - os: macos-10.15
+          - os: macos-10.15 # Do not build with Redis AI on MacOS
             rai: 1.2.5
 
     env:
@@ -51,7 +51,7 @@ jobs:
         run: brew install make || true
 
       - name: Install Intel compiler
-        if: "contains( matrix.compiler, 'intel' )" # if using intel compiler
+        if: "contains( matrix.compiler, 'intel' ) && contains( matrix.os, 'ubuntu')" # if using intel compiler
         run: |
           wget https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS-2023.PUB &&
           sudo apt-key add GPG-PUB-KEY-INTEL-SW-PRODUCTS-2023.PUB &&
@@ -64,6 +64,8 @@ jobs:
           echo "CC=icc" >> $GITHUB_ENV &&
           echo "CXX=icpc" >> $GITHUB_ENV &&
           echo "NO_CHECKS=1" >> $GITHUB_ENV
+
+     
 
       - name: Install SmartSim (with ML backends if not python 3.9)
         if: matrix.py_v != '3.9'
