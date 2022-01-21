@@ -2,7 +2,7 @@ import time
 
 import pytest
 
-from smartsim import Experiment, constants
+from smartsim import Experiment, status
 from smartsim.settings.settings import RunSettings
 
 """
@@ -25,7 +25,9 @@ if pytest.test_launcher not in pytest.wlm_options:
 def test_simple_model_on_wlm(fileutils, wlmutils):
     launcher = wlmutils.get_test_launcher()
     if launcher not in ["pbs", "slurm", "cobalt", "lsf"]:
-        pytest.skip("Test only runs on systems with LSF, PBSPro, Slurm, or Cobalt as WLM")
+        pytest.skip(
+            "Test only runs on systems with LSF, PBSPro, Slurm, or Cobalt as WLM"
+        )
 
     exp_name = "test-simplebase-settings-model-launch"
     exp = Experiment(exp_name, launcher=wlmutils.get_test_launcher())
@@ -38,13 +40,15 @@ def test_simple_model_on_wlm(fileutils, wlmutils):
     # launch model twice to show that it can also be restarted
     for _ in range(2):
         exp.start(M, block=True)
-        assert exp.get_status(M)[0] == constants.STATUS_COMPLETED
+        assert exp.get_status(M)[0] == status.STATUS_COMPLETED
 
 
 def test_simple_model_stop_on_wlm(fileutils, wlmutils):
     launcher = wlmutils.get_test_launcher()
     if launcher not in ["pbs", "slurm", "cobalt", "lsf"]:
-        pytest.skip("Test only runs on systems with LSF, PBSPro, Slurm, or Cobalt as WLM")
+        pytest.skip(
+            "Test only runs on systems with LSF, PBSPro, Slurm, or Cobalt as WLM"
+        )
 
     exp_name = "test-simplebase-settings-model-stop"
     exp = Experiment(exp_name, launcher=wlmutils.get_test_launcher())
@@ -59,4 +63,4 @@ def test_simple_model_stop_on_wlm(fileutils, wlmutils):
     time.sleep(2)
     exp.stop(M)
     assert M.name in exp._control._jobs.completed
-    assert exp.get_status(M)[0] == constants.STATUS_CANCELLED
+    assert exp.get_status(M)[0] == status.STATUS_CANCELLED
