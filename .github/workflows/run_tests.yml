@@ -22,10 +22,13 @@ jobs:
         rai: [1.2.3, 1.2.5] # Redis AI versions
         py_v: [3.7, 3.8, 3.9] # Python versions
         exclude:
+          - os: macos-10.15
+            compiler: intel
           - os: macos-10.15 # Do not build with Redis AI on MacOS
             rai: 1.2.5
 
     env:
+      FC: gfortran-${{ matrix.compiler }}
       GCC_V: ${{ matrix.compiler }} # used when the compiler is GNU
       NO_CHECKS: 0 # set to 1 when using intel compiler. Removes checks for gcc.
       SMARTSIM_REDISAI: ${{ matrix.rai }}
@@ -61,18 +64,8 @@ jobs:
           printenv >> $GITHUB_ENV &&
           echo "CC=icc" >> $GITHUB_ENV &&
           echo "CXX=icpc" >> $GITHUB_ENV &&
-          echo "NO_CHECKS=1" >> $GITHUB_ENV
-
-      - name: Install Intel compiler on MacOS
-        if: "contains( matrix.compiler, 'intel' ) && contains( matrix.os, 'macos')"
-        run: |
-          pip install intel-openmp &&
-          pip install tbb4py &&
-          pip install dpcpp-cpp-rt &&
-          printenv >> $GITHUB_ENV &&
-          echo "CC=icc" >> $GITHUB_ENV &&
-          echo "CXX=icpc" >> $GITHUB_ENV &&
-          echo "NO_CHECKS=1" >> $GITHUB_ENV
+          echo "NO_CHECKS=1" >> $GITHUB_ENV &&
+          echo "FC=ifort" >> $GITHUB_ENV
 
 
       - name: Install SmartSim (with ML backends if not python 3.9)
