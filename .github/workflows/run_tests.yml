@@ -12,7 +12,7 @@ env:
 
 jobs:
   run_tests:
-    name: Run tests with ${{ matrix.os }}, Python ${{ matrix.py_v}}, Compiler ${{ matrix.compiler }}, rai ${{ matrix.rai }}
+    name: Run tests with ${{ matrix.os }}, Python ${{ matrix.py_v}}, Compiler ${{ matrix.compiler }}, RedisAI ${{ matrix.rai }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
