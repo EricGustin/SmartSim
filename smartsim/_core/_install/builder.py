@@ -171,6 +171,7 @@ class RedisBuilder(Builder):
         build_cmd = [
             self.binary_path("make"),
             "-j",
+            "--debug=a",
             str(self.jobs),
             f"MALLOC={self.malloc}"
         ]
