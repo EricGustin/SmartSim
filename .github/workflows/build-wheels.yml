@@ -21,7 +21,7 @@ jobs:
         python-version: [3.7, 3.8, 3.9]
 
     env:
-      SMARTSIM_SUFFIX: "$env:GITHUB_REF_NAME" # the branch or tag name that triggered the workflow run
+      SMARTSIM_SUFFIX: ${{ github.ref_name }}
 
     steps:
       - uses: actions/checkout@v2
