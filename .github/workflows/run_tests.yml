@@ -49,7 +49,10 @@ jobs:
           echo "$(brew --prefix)/opt/make/libexec/gnubin" >> $GITHUB_PATH
 
       - name: Install SmartSim (with ML backends)
-        run: python -m pip install .[dev,ml,ray]
+        run: |
+          echo "BELOW"
+          echo "$(smart site)"
+          python -m pip install .[dev,ml,ray]
 
       - name: Install ML Runtimes with Smart
         if: contains( matrix.os, 'macos' )
