@@ -67,4 +67,6 @@ jobs:
       - name: Upload Pytest coverage to Codecov
         uses: codecov/codecov-action@v2
         with:
-          files: ./tests/coverage.xml
+          fail_ci_if_error: true
+          files: ./coverage.xml
+          verbose: true
