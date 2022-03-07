@@ -62,6 +62,11 @@ jobs:
       - name: Run Pytest
         run: |
           echo "SMARTSIM_LOG_LEVEL=debug" >> $GITHUB_ENV
+          echo "REDISAI STUFF BELOW"
+          ls $(smart site)/_core/lib/
+          cd $(smart site)/_core/lib/
+          ls
+          otool -L redisai.so
           python -m pytest -vv --cov=./smartsim --cov-report=xml --cov-config=./tests/test_configs/cov/local_cov.cfg --ignore=tests/full_wlm/
 
       - name: Upload Pytest coverage to Codecov
