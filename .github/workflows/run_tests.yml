@@ -53,10 +53,7 @@ jobs:
 
       - name: Install ML Runtimes with Smart
         if: contains( matrix.os, 'macos' )
-        run: |
-          echo "BELOW"
-          echo "$(smart site)"
-          smart build --device cpu -v
+        run: smart build --device cpu -v
 
       - name: Install ML Runtimes with Smart (with pt, tf, and onnx support)
         if: contains( matrix.os, 'ubuntu' )
@@ -67,7 +64,7 @@ jobs:
           echo "SMARTSIM_LOG_LEVEL=debug" >> $GITHUB_ENV
           echo "BELOW"
           echo "$(smart site)"
-          py.test -s --import-mode=importlib -o log_cli=true --cov=./smartsim --cov-report=xml --cov-config=./tests/test_configs/cov/local_cov.cfg --ignore=tests/full_wlm/ ./tests/
+          py.test -s --import-mode=importlib -o log_cli=true --cov=/Users/runner/hostedtoolcache/Python/3.7.12/x64/lib/python3.7/site-packages/smartsim/ --cov-report=xml --cov-config=./tests/test_configs/cov/local_cov.cfg --ignore=tests/full_wlm/ ./tests/
           cat ./coverage.xml
       - name: Upload Pytest coverage to Codecov
         uses: codecov/codecov-action@v2
