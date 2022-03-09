@@ -1,3 +1,4 @@
+import sys
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -52,7 +53,7 @@ if __name__ == "__main__":
         uploader_name="test_data",
     )
 
-    trainloader = DataLoader(training_set, batch_size=None, num_workers=0)
+    trainloader = DataLoader(training_set, batch_size=None, num_workers=2)
 
     check_dataloader(training_set)
     model = Net(num_classes=training_set.num_classes).double()
@@ -93,3 +94,4 @@ if __name__ == "__main__":
         epoch_running_loss = 0.0
 
     print("Finished Training")
+    sys.exit(0)
