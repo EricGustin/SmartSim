@@ -52,7 +52,7 @@ if __name__ == "__main__":
         uploader_name="test_data",
     )
 
-    trainloader = DataLoader(training_set, batch_size=None, num_workers=2)
+    trainloader = DataLoader(training_set, batch_size=None, num_workers=1)
 
     check_dataloader(training_set)
     model = Net(num_classes=training_set.num_classes).double()
