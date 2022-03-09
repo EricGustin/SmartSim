@@ -1,6 +1,6 @@
 name: run-tests
 
-on: [push,pull_request]
+on: pull_request
 
 env:
   HOMEBREW_NO_ANALYTICS: "ON" # Make Homebrew installation a little quicker
@@ -67,9 +67,9 @@ jobs:
       - name: Cat output files from failed test
         run: |
           echo "TRAINER.ERR"
-          cat /home/runner/work/SmartSim/SmartSim/tests/test_output/backends/test_dataloader/test_batch_dataloader_torch/trainer/trainer.err
+          cat /home/runner/work/SmartSim/SmartSim/tests/test_output/test-batch-dataloader-torch/trainer/trainer.err
           echo "TRAINER.OUT"
-          cat /home/runner/work/SmartSim/SmartSim/tests/test_output/backends/test_dataloader/test_batch_dataloader_torch/trainer/trainer.out
+          cat /home/runner/work/SmartSim/SmartSim/tests/test_output/test-batch-dataloader-torch/trainer/trainer.out
 
       - name: Upload Pytest coverage to Codecov
         uses: codecov/codecov-action@v2
