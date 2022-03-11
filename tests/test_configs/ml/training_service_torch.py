@@ -1,3 +1,4 @@
+import sys
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -93,3 +94,4 @@ if __name__ == "__main__":
         epoch_running_loss = 0.0
 
     print("Finished Training")
+    sys.exit(0)
