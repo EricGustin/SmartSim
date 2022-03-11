@@ -56,7 +56,7 @@ jobs:
         run: smart build --device cpu -v
 
       - name: Install ML Runtimes with Smart (with pt, tf, and onnx support)
-        if: contains( matrix.os, 'ubuntu' ) && matrix.py_v != 3.9 && matrix.rai != '1.2.3'
+        if: contains( matrix.os, 'ubuntu' ) && (matrix.py_v != 3.9 || matrix.rai != '1.2.3')
         run: smart build --device cpu --onnx -v
 
       - name: Install ML Runtimes with Smart excluding PyTorch for Ubuntu/Python3.9/RAI1.2.3 combo
